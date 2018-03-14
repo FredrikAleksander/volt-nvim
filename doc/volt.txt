@@ -1,0 +1,158 @@
+*volt.txt* A plugin that integrates with Voltron for nice debugging
+
+
+                  Voltron Debug UI Integration For Neovim
+
+==============================================================================
+
+CONTENTS                                                *volt-contents*
+
+    1. Introduction .................... |volt-intro|
+    2. Features ........................ |volt-features|
+    3. Getting Started ................. |volt-start|
+    4. Customizing ..................... |volt-customizing|
+    5. Commands ........................ |volt-commands|
+    6. General guidelines .............. |volt-guidelines|
+    7. License ......................... |volt-license|
+    8. Issues and Bugs ................. |volt-bugs|
+    9. Contributing .................... |volt-contributing|
+
+
+Original Author:    Fredrik A. Kristiansen <fredrikaxk@gmail.com>
+Maintainer:         Fredrik A. Kristiansen <fredrikaxk@gmail.com>
+License:            MIT with some parts under the VIM |license|
+
+==============================================================================
+
+INTRODUCTION                                            *volt-intro*
+
+Volt provides a simple integration with Voltron, allowing Neovim to mark and
+highlight breakpoints and the position of the program counter within program
+source code. It is not designed as a complete debugger frontend, it is just
+meant as a supplement to your existing debugger setup. Using Voltron it is
+easy to create customized debugging UI's that works with multiple debuggers.
+
+==============================================================================
+
+FEATURES                                                *volt-features*
+
+* Mark and highlight breakpoints and the program counter within source
+
+==============================================================================
+
+GETTING STARTED                                         *volt-start*
+
+You should already be running a voltron debugging session
+>
+	:VoltAttach
+<
+
+When you want to detach from a voltron debugging session
+>
+	:VoltDetach
+<
+==============================================================================
+
+CUSTOMIZING                                             *volt-customizing*
+
+                                                *g:volt#sign#bp_symbol*
+g:volt#sign#bp_symbol ~
+        Default sign text for breakpoints: `B>`
+
+                                                *g:volt#sign#pc_symbol*
+g:volt#sign#pc_symbol ~
+        Default sign text for program counter: `->`
+
+==============================================================================
+
+HIGHLIGHTING                                            *volt-highlighting*
+
+To customize the highlighting of signs, use the following highlight groups:
+
+                                                *hl-VoltBreakpointSign*
+VoltBreakpointSign        For breakpoint signs, links to |Type| by default.
+
+                                                *hl-VoltSelectedPCSign*
+VoltSelectedPCSign        For the selected program counter sign, links to 
+						  |Debug| by default.
+
+                                                *hl-VoltUnselectedPCSign*
+VoltUnselectedPCSign      For the unselected program counter sign, links to
+                    	  |NonText| by default.
+
+Example: >
+    highlight VoltBreakpointSign ctermfg=cyan guifg=cyan
+
+To customize highlighting for the line where a sign resides, you can use the
+following highlight groups:
+
+                                                *hl-VoltBreakpointLine*
+VoltBreakpointLine        For breakpoint lines, unhighlighted by default.
+
+                                                *hl-VoltSelectedPCLine*
+VoltSelectedPCLine        For the current line of the selected program 
+						  counter, links to |DiffText| by default.
+
+                                                *hl-VoltUnselectedPCLine*
+VoltUnselectedPCLine      For the current line of the unselected program 
+						  counter, links to |DiffChange| by default.
+
+Example: >
+    highlight VoltSelectedPCLine ctermbg=DarkGrey guibg=DarkGrey
+
+==============================================================================
+
+COMMANDS                                                *volt-commands*
+
+                                                *:VoltAttach*
+:VoltAttach [{arg}]		Attach to Voltron
+												*:VoltDetach*
+:VoltDetach [{arg}]		Detach from Voltron
+
+==============================================================================
+
+GENERAL GUIDELINES                                      *volt-guidelines*
+
+Below are some random points that might make your debugging life easier:
+
+* `tmuxinator` makes it easy to setup your debugger layout
+
+* Use WSL on Windows. Recent Window builds support running running Win32
+  processes (including cdb and WinDbg) within WSL
+
+* See `https://github.com/snare/voltron` for examples of setting up Voltron.
+
+* If you run into problems, do check out the FAQ section in `README.md`
+
+==============================================================================
+
+LICENSE                                                 *volt-license*
+
+Primarily licensed under MIT with some parts under the Vim |license|.
+See `LICENSE` file included in the source directory for more details.
+
+==============================================================================
+
+FEEDBACK AND ISSUES                                     *volt-bugs*
+
+If you run into a bug, use the Github issue tracker to report it:
+
+https://github.com/FredrikAleksander/volt.nvim/issues
+
+It would be nice if you could set the following environment variable:
+>
+    export NVIM_PYTHON_LOG_FILE=/tmp/nvlog
+<
+and post the log along with the bug report.
+
+==============================================================================
+
+CONTRIBUTING                                            *volt-contributing*
+
+Awesome! Check out the Github issues page for ideas. If you have a feature 
+idea, please report it as an issue, before starting to work on it.
+
+Another great way to contribute would be to make this documentation more
+comprehensive, and easy to understand.
+
+ vim:tw=78:sw=4:ft=help:norl:
