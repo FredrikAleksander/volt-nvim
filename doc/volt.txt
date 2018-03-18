@@ -1,5 +1,12 @@
 *volt.txt* A plugin that integrates with Voltron for nice debugging
 
+                    __  __          ___    __      
+                   /\ \/\ \        /\_ \  /\ \__   
+                   \ \ \ \ \    ___\//\ \ \ \ ,_\  
+                    \ \ \ \ \  / __`\\ \ \ \ \ \/  
+                     \ \ \_/ \/\ \L\ \\_\ \_\ \ \_ 
+                      \ `\___/\ \____//\____\\ \__\
+                       `\/__/  \/___/ \/____/ \/__/
 
                   Voltron Debug UI Integration For Neovim
 
@@ -12,10 +19,11 @@ CONTENTS                                                *volt-contents*
     3. Getting Started ................. |volt-start|
     4. Customizing ..................... |volt-customizing|
     5. Commands ........................ |volt-commands|
-    6. General guidelines .............. |volt-guidelines|
-    7. License ......................... |volt-license|
-    8. Issues and Bugs ................. |volt-bugs|
-    9. Contributing .................... |volt-contributing|
+	6. Functions ....................... |volt-functions|
+    7. General guidelines .............. |volt-guidelines|
+    8. License ......................... |volt-license|
+    9. Issues and Bugs ................. |volt-bugs|
+   10. Contributing .................... |volt-contributing|
 
 
 Original Author:    Fredrik A. Kristiansen <fredrikaxk@gmail.com>
@@ -38,9 +46,14 @@ FEATURES                                                *volt-features*
 
 * Mark and highlight breakpoints and the program counter within source
 
+* Call debugger commands in your scripts
+
 ==============================================================================
 
 GETTING STARTED                                         *volt-start*
+
+Make sure Voltron is already working for your setup. This plugin is useless
+without it. Also see |volt-guidelines| for some advice on setting stuff up
 
 You should already be running a voltron debugging session
 >
@@ -62,6 +75,14 @@ g:volt#sign#bp_symbol ~
                                                 *g:volt#sign#pc_symbol*
 g:volt#sign#pc_symbol ~
         Default sign text for program counter: `->`
+												*g:volt#debug_launch*
+g:volt#debug_launch ~
+		If this variable is set to the name of a function, that function
+		will be called whenever |:VoltLaunch| is called
+												*g:volt#debug_quit*
+g:volt#debug_quit ~
+	If this variable is set to the name of a function, that function will
+	be called whenever |:VoltQuit| is called
 
 ==============================================================================
 
@@ -104,16 +125,89 @@ Example: >
 
 COMMANDS                                                *volt-commands*
 
+												*:VoltLaunch*
+:VoltLaunch				See |g:volt#debug_launch|
+												*:VoltQuit*
+:VoltQuit				See |g:volt#debug_quit|
                                                 *:VoltAttach*
 :VoltAttach [{arg}]		Attach to Voltron
 												*:VoltDetach*
 :VoltDetach [{arg}]		Detach from Voltron
+												*:VoltBreakpointToggle*
+:VoltBreakpointToggle   Toggle a breakpoint at the current cursor
+
+												*:VoltRefresh*
+:VoltRefresh			Refreshes the debugger state in `Neovim`. Required
+						when the debugger state has changed without having
+						executed code within the debugee
+												*:VoltContinue*
+:VoltContinue           Continue execution
+												*:VoltStepInto*
+:VoltStepInto			Step one source line, stepping into calls
+												*:VoltStepIntoI*
+:VoltStepIntoI			Step one instruction, stepping into calls
+												*:VoltStepOver*
+:VoltStepOver			Step one source line, stepping over calls
+												*:VoltStepOverI*
+:VoltStepOverI			Step one instruction, stepping over calls
+												*:VoltStepOut*
+:VoltStepOut			Step out of the current frame
+==============================================================================
+
+FUNCTIONS												volt-functions
+
+														*VoltHostVersion()*
+VoltHostVersion()
+		Return the name of the curently attached to debugger host.
+		Returns a empty string if not attached.
+														*VoltCommand(cmd)*
+VoltCommand({cmd})
+		Execute a raw debugger command in the debugger host. Returns the
+		output of the command as a string.
+		
+		Examples (LLDB): >
+			:call VoltCommand('br set -f main.c -l 5')
+			:call VoltCommand('thread continue')
+<
+		Examples (WinDBG): >
+			:call VoltCommand('.loadby sos clr')
+			:call VoltCommand('!clrstack')
+<
 
 ==============================================================================
 
 GENERAL GUIDELINES                                      *volt-guidelines*
 
 Below are some random points that might make your debugging life easier:
+
+* In the root of the source repository, there is a `voltinit.py` script
+  that may be called by LLDB, GDB and PyKD to automatically attach and detach
+  on debugger start. Call it from your `.lldbinit`, `.gdbinit` etc.
+  Requires the NVIM_LISTEN_ADDRESS environment variable to be set to valid
+  |rpc-api| address. It will automatically call VoltAttach.
+  Using a Neovim terminal mode buffer will automatically have the required
+  environment variable set, so it is possible to just start your debugger 
+  from `Neovim` and it will work automatically
+>
+  	:20sp | term gdb build/debugee
+>
+
+* Have some way of loading project settings and store launch and quit
+  scripts there. I have this at the end of my .vimrc
+>
+	for f in split(glob('.vimproject'))
+		exe 'source ' f
+	endfor
+<
+  When i open a project it will check if the current working directory
+  contains a .vimproject file. If it does, it sources it. I setup
+  |g:volt#debug_launch| and |g:volt#debug_quit| there. It' usually
+  just a function that calls some shell script in a terminal buffer, and
+  wipes that buffer when debugging ends
+
+* |VoltCommand(cmd)| is a really powerful tool. Combined with 
+  |VoltHostVersion()| it allows adding alot of functionality that may improve
+  your debugging workflow, and in a way that works across debuggers.
 
 * `tmuxinator` makes it easy to setup your debugger layout
 
@@ -137,7 +231,7 @@ FEEDBACK AND ISSUES                                     *volt-bugs*
 
 If you run into a bug, use the Github issue tracker to report it:
 
-https://github.com/FredrikAleksander/volt.nvim/issues
+https://github.com/FredrikAleksander/volt-nvim/issues
 
 It would be nice if you could set the following environment variable:
 >
@@ -151,6 +245,16 @@ CONTRIBUTING                                            *volt-contributing*
 
 Awesome! Check out the Github issues page for ideas. If you have a feature 
 idea, please report it as an issue, before starting to work on it.
+
+Some things that I have planned but have not started working on yet, that
+would be nice features to have:
+
+* Full refactor of code. The current code is just something that has been
+  hacked together so I could get a consisent debugging setup in Neovim
+
+* Symbol lookup. Support command for querying Voltron for a representation
+  of a symbol. Could be combined with a command for calling it with the
+  word where the cursor is currently at, or with a range in visual mode
 
 Another great way to contribute would be to make this documentation more
 comprehensive, and easy to understand.
