@@ -28,3 +28,12 @@ Requires working Python 3 host in Neovim. Remember to call
 ```
 
 For documentation
+
+
+
+Screenshots
+-----------
+
+* ![Debugging Rust kernel](/img/rust_os_debug.png)
+  Debugging the kernel from the second edition of the blog [Writing an OS in Rust](https://os.phil-opp.com/)
+
