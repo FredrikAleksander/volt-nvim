@@ -257,6 +257,7 @@ class DebugUI:
             self.execute('continue')
         elif host == 'windbg':
             self.execute('g')
+        self.refresh()
     
     def stepinto(self):
         host = self.gethost()
@@ -266,7 +267,7 @@ class DebugUI:
             self.execute('step')
         elif host == 'windbg':
             pass
-        pass
+        self.refresh()
 
     def stepintoi(self):
         host = self.gethost()
@@ -276,7 +277,7 @@ class DebugUI:
             self.execute('si')
         elif host == 'windbg':
             pass
-        pass
+        self.refresh()
 
     def stepover(self):
         host = self.gethost()
@@ -286,7 +287,7 @@ class DebugUI:
             self.execute('next')
         elif host == 'windbg':
             pass
-        pass
+        self.refresh()
 
     def stepoveri(self):
         host = self.gethost()
@@ -296,7 +297,7 @@ class DebugUI:
             self.execute('ni')
         elif host == 'windbg':
             pass
-        pass
+        self.refresh()
 
     def stepout(self):
         host = self.gethost()
@@ -306,6 +307,7 @@ class DebugUI:
             self.execute('finish')
         elif host == 'windbg':
             pass
+        self.refresh()
 
     def start(self):
         self.location_cache = {}
