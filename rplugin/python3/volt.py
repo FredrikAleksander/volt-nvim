@@ -181,6 +181,8 @@ class DebugUI:
                     self.place_breakpoints(bufnr, new_bps)
             self.breakpoints[file] = new_bps
     def update_pc(self, pc):
+        if self.pc == pc or (self.pc != None and None and self.pc.file == pc.file and self.pc.line == pc.line):
+            return
         if self.pc != None and self.isfileopen(self.pc.file):
             self.unplace_pc(self.pc)
         if pc != None:
